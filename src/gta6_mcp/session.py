@@ -4,6 +4,9 @@ pyremoteplay's Session is asyncio-based; the MCP server's tools are
 synchronous calls. This module bridges the two by running the Remote Play
 session on a dedicated event loop in a daemon thread and exposing blocking
 methods on top of it.
+
+Every input sent to the console is recorded in an action log — the public
+"receipt" that proves the AI is the one on the sticks.
 """
 
 from __future__ import annotations
@@ -13,7 +16,9 @@ import io
 import threading
 import time
 import warnings
-from typing import Optional
+from collections import deque
+from datetime import datetime, timezone
+from typing import Any
 
 warnings.filterwarnings("ignore", category=DeprecationWarning, module="pyee")
 
@@ -22,6 +27,8 @@ from pyremoteplay.receiver import QueueReceiver
 
 CONNECT_TIMEOUT = 30.0
 FRAME_TIMEOUT = 10.0
+ACTION_LOG_SIZE = 200
+MAX_DRIVE_SECONDS = 5.0
 
 STICKS = ("left", "right")
 
@@ -30,14 +37,19 @@ class SessionError(RuntimeError):
     """Raised when the Remote Play session cannot do what was asked."""
 
 
+def _clamp(value: float) -> float:
+    return max(-1.0, min(1.0, value))
+
+
 class RemotePlaySession:
     """Owns the connection to a single PS5 over Remote Play."""
 
     def __init__(self) -> None:
-        self._device: Optional[RPDevice] = None
-        self._receiver: Optional[QueueReceiver] = None
-        self._loop: Optional[asyncio.AbstractEventLoop] = None
-        self._thread: Optional[threading.Thread] = None
+        self._device: RPDevice | None = None
+        self._receiver: QueueReceiver | None = None
+        self._loop: asyncio.AbstractEventLoop | None = None
+        self._thread: threading.Thread | None = None
+        self._actions: deque[dict[str, Any]] = deque(maxlen=ACTION_LOG_SIZE)
 
     # ------------------------------------------------------------------ state
 
@@ -47,15 +59,38 @@ class RemotePlaySession:
 
     def _require_connection(self) -> RPDevice:
         if not self.connected:
-            raise SessionError(
-                "Not connected to a PS5. Call connect(host) first."
-            )
+            raise SessionError("Not connected to a PS5. Call connect(host) first.")
         return self._device
+
+    def _record(self, action: str, **details: Any) -> None:
+        self._actions.append(
+            {
+                "at": datetime.now(timezone.utc).isoformat(timespec="milliseconds"),
+                "action": action,
+                **details,
+            }
+        )
+
+    def action_log(self, limit: int = 20) -> list[dict[str, Any]]:
+        return list(self._actions)[-max(1, limit):]
 
     # ------------------------------------------------------------- discovery
 
     @staticmethod
-    def status(host: str) -> dict:
+    def search() -> list[dict[str, Any]]:
+        devices = RPDevice.search()
+        return [
+            {
+                "host": device.host,
+                "name": device.host_name,
+                "type": device.host_type,
+                "status": device.status_name,
+            }
+            for device in devices
+        ]
+
+    @staticmethod
+    def status(host: str) -> dict[str, Any]:
         device = RPDevice(host)
         status = device.get_status()
         if not status:
@@ -65,15 +100,27 @@ class RemotePlaySession:
             )
         return dict(status)
 
+    @staticmethod
+    def wake(host: str, user: str | None = None) -> str:
+        device = RPDevice(host)
+        users = device.get_users()
+        if not users:
+            raise SessionError(
+                f"No registered PSN users for {host}. Register once with: "
+                f"pyremoteplay {host} --register"
+            )
+        device.wakeup(user or users[0])
+        return f"Wake signal sent to {host}. The console may take ~20s to come up."
+
     # ------------------------------------------------------------ connection
 
     def connect(
         self,
         host: str,
-        user: Optional[str] = None,
+        user: str | None = None,
         resolution: str = "720p",
         fps: int = 30,
-    ) -> dict:
+    ) -> dict[str, Any]:
         if self.connected:
             raise SessionError("Already connected. Call disconnect() first.")
 
@@ -122,15 +169,19 @@ class RemotePlaySession:
             self._device = device
             self._wait_first_frame()
         except Exception:
+            self._device = None
             self._teardown(device)
             raise
+        self._record("connect", host=host, user=user, resolution=resolution, fps=fps)
         return {"host": host, "user": user, "resolution": resolution, "fps": fps}
 
     def disconnect(self) -> None:
         device, self._device = self._device, None
         self._teardown(device)
+        if device is not None:
+            self._record("disconnect")
 
-    def _teardown(self, device: Optional[RPDevice]) -> None:
+    def _teardown(self, device: RPDevice | None) -> None:
         if device is not None:
             try:
                 device.disconnect()
@@ -165,6 +216,7 @@ class RemotePlaySession:
         image = frame.to_image()
         buf = io.BytesIO()
         image.save(buf, format="PNG")
+        self._record("screenshot", size=f"{image.width}x{image.height}")
         return buf.getvalue()
 
     # ----------------------------------------------------------------- input
@@ -172,25 +224,42 @@ class RemotePlaySession:
     def tap(self, button: str, ms: int = 100) -> None:
         device = self._require_connection()
         button = button.upper()
+        ms = max(10, ms)
         device.controller.button(button, "press")
-        time.sleep(max(ms, 10) / 1000)
+        time.sleep(ms / 1000)
         device.controller.button(button, "release")
-
-    def hold(self, button: str) -> None:
-        self._require_connection().controller.button(button.upper(), "press")
-
-    def release(self, button: str) -> None:
-        self._require_connection().controller.button(button.upper(), "release")
+        self._record("press", button=button, ms=ms)
 
     def stick(self, side: str, x: float, y: float, ms: int = 500) -> None:
         device = self._require_connection()
         if side not in STICKS:
             raise SessionError(f"Unknown stick {side!r}; use one of {STICKS}.")
-        x = max(-1.0, min(1.0, x))
-        y = max(-1.0, min(1.0, y))
+        x, y = _clamp(x), _clamp(y)
+        ms = max(10, ms)
         device.controller.stick(side, point=(x, y))
-        time.sleep(max(ms, 10) / 1000)
+        time.sleep(ms / 1000)
         device.controller.stick(side, point=(0.0, 0.0))
+        self._record("stick", side=side, x=x, y=y, ms=ms)
+
+    def drive(self, throttle: float, steer: float, seconds: float) -> dict[str, Any]:
+        device = self._require_connection()
+        throttle, steer = _clamp(throttle), _clamp(steer)
+        seconds = max(0.2, min(seconds, MAX_DRIVE_SECONDS))
+        pedal = "R2" if throttle >= 0 else "L2"
+        pressing = abs(throttle) > 0.05
+
+        if steer:
+            device.controller.stick("left", point=(steer, 0.0))
+        if pressing:
+            device.controller.button(pedal, "press")
+        try:
+            time.sleep(seconds)
+        finally:
+            if pressing:
+                device.controller.button(pedal, "release")
+            self.release_sticks()
+        self._record("drive", throttle=throttle, steer=steer, seconds=seconds, pedal=pedal)
+        return {"throttle": throttle, "steer": steer, "seconds": seconds, "pedal": pedal}
 
     def release_sticks(self) -> None:
         device = self._require_connection()

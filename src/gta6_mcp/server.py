@@ -7,8 +7,6 @@ single tool call covers seconds of gameplay despite model latency.
 
 from __future__ import annotations
 
-import time
-
 from mcp.server.mcpserver import Image, MCPServer
 
 from .session import RemotePlaySession
@@ -16,11 +14,12 @@ from .session import RemotePlaySession
 mcp = MCPServer(
     "gta6-mcp",
     instructions=(
-        "Control a PS5 running GTA 6 over Remote Play. Workflow: status(host) "
-        "to find the console, connect(host) to start the session, then loop "
-        "screenshot() -> decide -> press()/stick()/drive(). The action loop "
-        "has seconds of latency: prefer short macro bursts (1-3 s), re-observe "
-        "after every action, and avoid anything needing real-time reactions."
+        "Control a PS5 running GTA 6 over Remote Play. Workflow: search() or "
+        "status(host) to find the console, connect(host) to start the session, "
+        "then loop screenshot() -> decide -> press()/stick()/drive(). The "
+        "action loop has seconds of latency: prefer short macro bursts (1-3 s), "
+        "re-observe after every action, and avoid anything needing real-time "
+        "reactions."
     ),
 )
 
@@ -28,9 +27,21 @@ _session = RemotePlaySession()
 
 
 @mcp.tool()
+def search() -> list[dict]:
+    """Discover PlayStation consoles on the local network."""
+    return RemotePlaySession.search()
+
+
+@mcp.tool()
 def status(host: str) -> dict:
     """Check whether a PS5 at this IP/hostname is reachable and what it's running."""
     return RemotePlaySession.status(host)
+
+
+@mcp.tool()
+def wake(host: str, user: str | None = None) -> str:
+    """Wake a PS5 that is in rest mode so it can accept a Remote Play session."""
+    return RemotePlaySession.wake(host, user)
 
 
 @mcp.tool()
@@ -88,19 +99,11 @@ def drive(throttle: float = 1.0, steer: float = 0.0, seconds: float = 2.0) -> st
     steer: -1.0 full left to 1.0 full right.
     Short bursts (1-3 s) then screenshot() to see where you ended up.
     """
-    seconds = max(0.2, min(seconds, 5.0))
-    pedal = "R2" if throttle >= 0 else "L2"
-    if steer:
-        _session._require_connection().controller.stick(
-            "left", point=(max(-1.0, min(1.0, steer)), 0.0)
-        )
-    if abs(throttle) > 0.05:
-        _session.hold(pedal)
-    time.sleep(seconds)
-    if abs(throttle) > 0.05:
-        _session.release(pedal)
-    _session.release_sticks()
-    return f"Drove {seconds:.1f}s (throttle={throttle:+.2f} via {pedal}, steer={steer:+.2f})."
+    result = _session.drive(throttle, steer, seconds)
+    return (
+        f"Drove {result['seconds']:.1f}s (throttle={result['throttle']:+.2f} "
+        f"via {result['pedal']}, steer={result['steer']:+.2f})."
+    )
 
 
 @mcp.tool()
@@ -115,6 +118,12 @@ def open_phone() -> str:
     """Open the in-game phone (D-pad UP)."""
     _session.tap("UP", ms=100)
     return "Sent open-phone (UP)."
+
+
+@mcp.tool()
+def action_log(limit: int = 20) -> list[dict]:
+    """The receipt: the last `limit` inputs this server sent to the console."""
+    return _session.action_log(limit)
 
 
 def main() -> None:

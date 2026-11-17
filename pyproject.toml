@@ -15,6 +15,9 @@ dependencies = [
     "Pillow>=10.0",
 ]
 
+[project.optional-dependencies]
+dev = ["pytest>=8.0", "ruff>=0.6"]
+
 [project.scripts]
 gta6-mcp = "gta6_mcp.server:main"
 
@@ -24,3 +27,14 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.ruff]
+line-length = 100
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W", "UP", "B"]
+ignore = ["E402"]  # session.py filters warnings before importing pyremoteplay
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

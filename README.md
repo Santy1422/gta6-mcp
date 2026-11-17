@@ -2,6 +2,7 @@
 
 > **An AI is about to drive through Vice City on a real PS5. No jailbreak. No mods. No PC port. Launch day.**
 
+[![CI](https://github.com/Santy1422/gta6-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/Santy1422/gta6-mcp/actions/workflows/ci.yml)
 [![MCP](https://img.shields.io/badge/Protocol-MCP-blueviolet)](https://modelcontextprotocol.io)
 [![Platform](https://img.shields.io/badge/Platform-PS5%20(stock)-003791)](https://www.playstation.com)
 [![Game](https://img.shields.io/badge/Game-GTA%206-ff2d78)](https://www.rockstargames.com/VI)
@@ -96,6 +97,19 @@ claude mcp add gta6 -- /path/to/gta6-mcp/.venv/bin/gta6-mcp
 And tell Claude something like:
 
 > Connect to the PS5 at 192.168.1.42, take a screenshot, and go for a drive.
+
+Every input the server sends to the console is recorded — ask Claude for `action_log()` and you get the timestamped receipt of everything it did.
+
+## Development
+
+```bash
+pip install -e ".[dev]"
+ruff check src tests   # lint
+pytest                 # 13 tests, no PS5 required (pyremoteplay is faked)
+```
+
+The codebase is two modules: `session.py` (Remote Play session on a background
+event loop, exposed as blocking calls) and `server.py` (the MCP tool surface).
 
 ## Roadmap
 
