@@ -19,7 +19,7 @@ The realistic plan. Dates are anchored to the GTA 6 launch on **Thursday, Novemb
 
 **Goal:** the smallest tool surface Claude needs, validated on a game we already own.
 
-- [ ] MCP server exposing `screenshot()`, `press(button, ms)`, `stick(side, x, y, ms)`
+- [x] MCP server exposing `screenshot()`, `press(button, ms)`, `stick(side, x, y, ms)` — plus `drive()`, `enter_vehicle()`, `open_phone()` macros
 - [ ] Claude completes a trivial task in another PS5 game (navigate a menu, move a character)
 - [ ] Tool-call log capture working alongside screen recording
 

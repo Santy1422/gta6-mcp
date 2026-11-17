@@ -74,11 +74,34 @@ The perception-action loop takes seconds per cycle — Claude looks at a frame, 
 
 An AI tourist in Vice City on day one is the whole point — and it's wild enough on its own.
 
+## Quickstart
+
+Requirements: Python 3.10+, a PS5 with Remote Play enabled, and your PSN account — all on the same network.
+
+```bash
+git clone https://github.com/Santy1422/gta6-mcp.git
+cd gta6-mcp
+python3 -m venv .venv && .venv/bin/pip install -e .
+
+# One-time: link your PSN account to this machine (interactive)
+.venv/bin/pyremoteplay <PS5_IP> --register
+```
+
+Then add it to Claude (Claude Code shown; any MCP client works):
+
+```bash
+claude mcp add gta6 -- /path/to/gta6-mcp/.venv/bin/gta6-mcp
+```
+
+And tell Claude something like:
+
+> Connect to the PS5 at 192.168.1.42, take a screenshot, and go for a drive.
+
 ## Roadmap
 
 - [x] Research: map every prior "AI plays GTA" project, confirm the PS5 + GTA 6 gap
 - [ ] **Phase 0** — Pre-launch: PS5 Remote Play link established, first frame captured
-- [ ] **Phase 1** — Minimal MCP (`screenshot`, `press`, `stick`) validated on another game
+- [ ] **Phase 1** — Minimal MCP (`screenshot`, `press`, `stick`) — server built ✅, console validation pending
 - [ ] **Phase 2** — 🚨 **Launch day (Nov 19)**: Claude's first drive through Vice City, recorded
 - [ ] **Phase 3** — Week one: high-level macros, longer autonomous sessions, full video
 - [ ] **Phase 4** — Long-horizon goals, live streaming, and beyond

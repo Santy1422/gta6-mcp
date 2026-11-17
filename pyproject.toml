@@ -1,0 +1,26 @@
+[project]
+name = "gta6-mcp"
+version = "0.1.0"
+description = "Claude plays GTA 6 on a stock PS5 via Remote Play — an MCP server"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+dependencies = [
+    "mcp[cli]>=1.2.0",
+    "pyremoteplay>=0.7.6",
+    # pyremoteplay is unmaintained; these pins keep it importable on modern Python
+    "pyee==9.0.4",
+    "async-timeout>=4.0",
+    "av>=10.0",
+    "Pillow>=10.0",
+]
+
+[project.scripts]
+gta6-mcp = "gta6_mcp.server:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
