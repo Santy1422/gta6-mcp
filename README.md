@@ -2,12 +2,23 @@
 
 > **An AI is about to drive through Vice City on a real PS5. No jailbreak. No mods. No PC port. Launch day.**
 
+<div align="center">
+
+### ⏳ T-MINUS 2 DAYS
+
+**GTA 6 drops Thursday, Nov 19, 2026. The first AI gameplay clip lands in this repo the same day.**
+
+**⭐ Star now · 👀 Watch releases — or find out about it a week later on someone else's feed**
+
+</div>
+
 [![CI](https://github.com/Santy1422/gta6-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/Santy1422/gta6-mcp/actions/workflows/ci.yml)
 [![MCP](https://img.shields.io/badge/Protocol-MCP-blueviolet)](https://modelcontextprotocol.io)
 [![Platform](https://img.shields.io/badge/Platform-PS5%20(stock)-003791)](https://www.playstation.com)
 [![Game](https://img.shields.io/badge/Game-GTA%206-ff2d78)](https://www.rockstargames.com/VI)
 [![Status](https://img.shields.io/badge/Status-T--minus%20launch%20day-orange)]()
 [![Day One](https://img.shields.io/badge/Day%20One-Nov%2019%2C%202026-success)]()
+[![Stars](https://img.shields.io/github/stars/Santy1422/gta6-mcp?style=social)](https://github.com/Santy1422/gta6-mcp/stargazers)
 
 **GTA 6 launches Thursday, November 19, 2026.** The same day, Claude — Anthropic's AI — will be behind the wheel. Not in an emulator. Not in a modded PC build. On a **stock PlayStation 5**, through an MCP server that streams the console's video to the model and sends controller input back.
 
@@ -113,6 +124,8 @@ event loop, exposed as blocking calls) and `server.py` (the MCP tool surface).
 
 ## Roadmap
 
+*Updated live through launch week — watch the checkboxes flip.*
+
 - [x] Research: map every prior "AI plays GTA" project, confirm the PS5 + GTA 6 gap
 - [ ] **Phase 0** — Pre-launch: PS5 Remote Play link established, first frame captured
 - [ ] **Phase 1** — Minimal MCP (`screenshot`, `press`, `stick`) — server built ✅, console validation pending
@@ -122,9 +135,19 @@ event loop, exposed as blocking calls) and `server.py` (the MCP tool surface).
 
 Full phase breakdown with exit criteria and risks: **[ROADMAP.md](ROADMAP.md)**. The research that started it all: **[docs/research.md](docs/research.md)**.
 
-## Follow the launch
+## The moment
 
-⭐ **Star the repo** — launch-day footage, the tool-call logs, and the MCP server code land here first. If Claude stalls a car at a red light in Vice City on November 19, you'll want to have seen it live.
+Thursday morning, three things happen at once: GTA 6 unlocks, a stock PS5 boots it, and an AI picks up the controller. Whatever happens next — Claude cruising down Ocean Drive or stalling at its first red light — **the unedited clip and the full tool-call log get committed to this repo within hours**.
+
+There are two kinds of people on November 19: the ones watching the first AI drive through Vice City as it happens, and the ones reading the recap. 
+
+**How to be in the first group:**
+
+- ⭐ **Star the repo** — this is the scoreboard that decides how far launch-day clips travel
+- 👀 **Watch → Custom → Releases** — GitHub pings you the second the first clip drops
+- 🔁 Got a PS5 and this repo cloned? You can run the exact same experiment Thursday — race us to the first clip
+
+Everything ships here first. The write-ups, threads, and videos come after.
 
 ## Disclaimer
 
