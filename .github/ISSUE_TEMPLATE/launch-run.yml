@@ -1,0 +1,37 @@
+name: 📼 Launch run
+description: Ran the experiment on your own PS5? Show us the clip and the log
+title: "📼 Run: "
+labels: ["launch-run"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        You cloned the repo, pointed it at your PS5, and let Claude loose.
+        Respect. Drop the evidence below — best runs get linked from the README.
+  - type: input
+    id: clip
+    attributes:
+      label: Clip URL
+      description: YouTube, Twitch, anywhere public
+    validations:
+      required: true
+  - type: textarea
+    id: log
+    attributes:
+      label: action_log() excerpt
+      description: Paste the tool-call log for the moment in the clip — it's the receipt
+      render: json
+    validations:
+      required: true
+  - type: input
+    id: setup
+    attributes:
+      label: Setup
+      placeholder: "e.g. PS5 Slim, firmware 14.02, 720p/30, Ethernet, Claude Code"
+    validations:
+      required: true
+  - type: textarea
+    id: story
+    attributes:
+      label: What happened?
+      placeholder: "It drove 3 blocks, stopped at a green light, apologized."
