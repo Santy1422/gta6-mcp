@@ -116,11 +116,12 @@ Requirements: Python 3.10+, a PS5 with Remote Play enabled, and your PSN account
 ```bash
 git clone https://github.com/Santy1422/gta6-mcp.git
 cd gta6-mcp
-python3 -m venv .venv && .venv/bin/pip install -e .
-
-# One-time: link your PSN account to this machine (interactive)
-.venv/bin/pyremoteplay <PS5_IP> --register
+./setup.sh
 ```
+
+That's it — the script installs everything and prints the two one-time steps left: linking your PSN account (`pyremoteplay <PS5_IP> --register`, browser login + the 8-digit PIN from the console's Remote Play settings) and adding the server to Claude.
+
+📖 Guía detallada en español, incluyendo los ajustes de la PS5 y problemas típicos: **[docs/instalacion.md](docs/instalacion.md)**
 
 Then add it to Claude (Claude Code shown; any MCP client works):
 

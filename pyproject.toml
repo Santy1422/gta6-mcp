@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Claude plays GTA 6 on a stock PS5 via Remote Play — an MCP server"
 readme = "README.md"
 requires-python = ">=3.10"
-license = { text = "MIT" }
+license = "MIT"
 dependencies = [
     "mcp[cli]>=1.2.0",
     "pyremoteplay>=0.7.6",
@@ -22,7 +22,7 @@ dev = ["pytest>=8.0", "pytest-cov>=5.0", "ruff>=0.6"]
 gta6-mcp = "gta6_mcp.server:main"
 
 [build-system]
-requires = ["setuptools>=68"]
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
