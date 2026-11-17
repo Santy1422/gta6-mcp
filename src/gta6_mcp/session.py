@@ -241,6 +241,27 @@ class RemotePlaySession:
         device.controller.stick(side, point=(0.0, 0.0))
         self._record("stick", side=side, x=x, y=y, ms=ms)
 
+    def walk(
+        self, x: float, y: float, seconds: float, sprint: bool = False
+    ) -> dict[str, Any]:
+        """Move on foot: hold the left stick (and CROSS to sprint) for a burst."""
+        device = self._require_connection()
+        x, y = _clamp(x), _clamp(y)
+        if x == 0 and y == 0:
+            raise SessionError("walk needs a direction; x and y are both 0.")
+        seconds = max(0.2, min(seconds, MAX_DRIVE_SECONDS))
+        device.controller.stick("left", point=(x, y))
+        if sprint:
+            device.controller.button("CROSS", "press")
+        try:
+            time.sleep(seconds)
+        finally:
+            if sprint:
+                device.controller.button("CROSS", "release")
+            self.release_sticks()
+        self._record("walk", x=x, y=y, seconds=seconds, sprint=sprint)
+        return {"x": x, "y": y, "seconds": seconds, "sprint": sprint}
+
     def combo(self, buttons: list[str], interval_ms: int = 80) -> dict[str, Any]:
         """Execute a button sequence at machine speed — the cheat-code primitive."""
         device = self._require_connection()

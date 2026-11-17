@@ -38,6 +38,10 @@ class FakeSession:
             "pedal": "R2" if throttle >= 0 else "L2",
         }
 
+    def walk(self, x, y, seconds, sprint=False):
+        self.calls.append(("walk", x, y, seconds, sprint))
+        return {"x": x, "y": y, "seconds": min(seconds, 5.0), "sprint": sprint}
+
     def combo(self, buttons, interval_ms=80):
         self.calls.append(("combo", tuple(buttons), interval_ms))
         return {
@@ -103,6 +107,12 @@ def test_drive_formats_result(fake_session):
     assert ("drive", -1.0, 0.5, 2.0) in fake_session.calls
 
 
+def test_walk_formats_result(fake_session):
+    assert "Walked" in server.walk(0.0, -1.0, seconds=2.0)
+    assert "Sprinted" in server.walk(1.0, 0.0, seconds=1.0, sprint=True)
+    assert ("walk", 0.0, -1.0, 2.0, False) in fake_session.calls
+
+
 def test_cheat_parses_sequence(fake_session):
     message = server.cheat("R1, R2 L1,CROSS")
     assert "4-button sequence" in message
@@ -140,6 +150,7 @@ def test_all_tools_registered():
         "press",
         "stick",
         "drive",
+        "walk",
         "cheat",
         "enter_vehicle",
         "open_phone",

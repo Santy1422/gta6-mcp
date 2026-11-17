@@ -272,6 +272,32 @@ def test_drive_coasts_without_pedal(connected):
     assert buttons == []
 
 
+def test_walk_holds_stick_then_recenters(connected):
+    result = connected.walk(0.0, -1.0, seconds=1.0)
+    assert result == {"x": 0.0, "y": -1.0, "seconds": 1.0, "sprint": False}
+    sticks = [c for c in connected._device.controller.calls if c[0] == "stick"]
+    assert sticks[0] == ("stick", "left", (0.0, -1.0))
+    assert sticks[-1] == ("stick", "right", (0.0, 0.0))
+    buttons = [c for c in connected._device.controller.calls if c[0] == "button"]
+    assert buttons == []
+
+
+def test_walk_sprint_holds_cross(connected):
+    connected.walk(1.0, 0.0, seconds=1.0, sprint=True)
+    calls = connected._device.controller.calls
+    assert ("button", "CROSS", "press") in calls
+    assert ("button", "CROSS", "release") in calls
+
+
+def test_walk_requires_direction(connected):
+    with pytest.raises(SessionError, match="direction"):
+        connected.walk(0.0, 0.0, seconds=1.0)
+
+
+def test_walk_caps_duration(connected):
+    assert connected.walk(1.0, 0.0, seconds=99)["seconds"] == session_module.MAX_DRIVE_SECONDS
+
+
 def test_combo_executes_sequence_in_order(connected):
     result = connected.combo(["r1", "r2", "cross"], interval_ms=50)
     assert result == {"buttons": ["R1", "R2", "CROSS"], "count": 3, "interval_ms": 50}
@@ -310,6 +336,7 @@ def test_server_registers_all_tools():
         "press",
         "stick",
         "drive",
+        "walk",
         "cheat",
         "enter_vehicle",
         "open_phone",

@@ -84,6 +84,7 @@ No hardware hacks. Sony ships the door: **PS5 Remote Play**, which Rockstar has 
 | `press(button, ms)` | Tap or hold any DualSense button |
 | `stick(side, x, y, ms)` | Analog stick control — steering, camera |
 | `drive(throttle, steer, seconds)` | High-level driving macro |
+| `walk(x, y, seconds, sprint)` | On-foot movement bursts, with sprint |
 | `enter_vehicle()` | Find and enter the nearest car |
 | `open_phone()` | Open the in-game phone |
 | `cheat(sequence)` | Execute a cheat-code button sequence at machine speed |
@@ -137,7 +138,7 @@ Every input the server sends to the console is recorded — ask Claude for `acti
 ```bash
 pip install -e ".[dev]"
 ruff check src tests scripts   # lint
-pytest                         # 45 tests, 100% coverage enforced, no PS5 required
+pytest                         # 54 tests, 100% coverage enforced, no PS5 required
 ```
 
 The codebase is two modules: `session.py` (Remote Play session on a background
@@ -233,7 +234,7 @@ It's my PS5, my copy of the game, and an AI with too much free time. Remote Play
 Yes — [Quickstart](#quickstart). All you need is a PS5 and the conviction that this is a good use of it.
 
 **Is this whole repo just hype?**
-The hype is real. So are the [45 passing tests](tests/) — at 100% coverage, which is more than the hype can say.
+The hype is real. So are the [54 passing tests](tests/) — at 100% coverage, which is more than the hype can say.
 
 ## 📰 Press
 

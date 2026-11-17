@@ -109,6 +109,20 @@ def drive(throttle: float = 1.0, steer: float = 0.0, seconds: float = 2.0) -> st
 
 
 @mcp.tool()
+def walk(x: float, y: float, seconds: float = 1.0, sprint: bool = False) -> str:
+    """Move the character on foot for `seconds` (capped at 5).
+
+    x: -1.0 (left) to 1.0 (right). y: -1.0 (forward/up) to 1.0 (back/down).
+    sprint holds CROSS while moving. Short bursts, then screenshot().
+    """
+    result = _session.walk(x, y, seconds, sprint)
+    gait = "Sprinted" if result["sprint"] else "Walked"
+    return (
+        f"{gait} {result['seconds']:.1f}s toward ({result['x']:+.2f}, {result['y']:+.2f})."
+    )
+
+
+@mcp.tool()
 def cheat(sequence: str, interval_ms: int = 80) -> str:
     """Execute a button sequence at machine speed — cheat codes, GTA-style.
 
