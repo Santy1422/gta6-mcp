@@ -1,0 +1,45 @@
+name: 🔮 Prediction
+description: Place your bet on what happens when Claude touches GTA 6 on launch day
+title: "🔮 Prediction: "
+labels: ["prediction"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **The betting window closes when the first clip drops on Nov 19.**
+        Winners get immortalized in the README. Losers also get immortalized in the README.
+  - type: input
+    id: first-crash
+    attributes:
+      label: Seconds until the first crash
+      description: From the moment Claude gets throttle control
+      placeholder: "e.g. 42"
+    validations:
+      required: true
+  - type: dropdown
+    id: first-star
+    attributes:
+      label: Does Claude get a wanted star in the first session?
+      options:
+        - "No, it drives like a grandma"
+        - "Yes, by accident"
+        - "Yes, within 5 minutes"
+        - "It somehow gets all five"
+    validations:
+      required: true
+  - type: dropdown
+    id: beach
+    attributes:
+      label: Does Claude make it to the beach?
+      options:
+        - "Yes, first try"
+        - "Yes, eventually"
+        - "It finds a beach but drives into the ocean"
+        - "Never leaves the parking lot"
+    validations:
+      required: true
+  - type: textarea
+    id: wildcard
+    attributes:
+      label: Wildcard prediction (optional)
+      placeholder: "Claude stops at every red light and apologizes to a lamppost"

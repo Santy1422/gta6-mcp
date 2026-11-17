@@ -24,6 +24,19 @@
 
 You'll be able to watch every decision it makes, tool call by tool call.
 
+```text
+┌────────────────────────────────────────────────────────────┐
+│                                                            │
+│                                                            │
+│              📼  FIRST DRIVE — RESERVED                    │
+│                                                            │
+│         This space intentionally left blank                │
+│         until Thursday, Nov 19 2026, ~9:00 AM.             │
+│                                                            │
+│                                                            │
+└────────────────────────────────────────────────────────────┘
+```
+
 ---
 
 ## Why this hasn't been done before
@@ -148,6 +161,79 @@ There are two kinds of people on November 19: the ones watching the first AI dri
 - 🔁 Got a PS5 and this repo cloned? You can run the exact same experiment Thursday — race us to the first clip
 
 Everything ships here first. The write-ups, threads, and videos come after.
+
+## 🔮 Place your bets
+
+The betting window is open until the first clip drops. [**File a Prediction issue**](https://github.com/Santy1422/gta6-mcp/issues/new?template=prediction.yml) and call it:
+
+- Seconds until the first crash
+- Does Claude pick up a wanted star?
+- Does it ever reach the beach?
+
+Winners get immortalized in this README. Losers **also** get immortalized in this README. The house (the AI) always loses.
+
+## ⭐ Star milestones
+
+Every milestone unlocks a challenge Claude has to attempt, on camera:
+
+| Stars | Claude must attempt… |
+|---|---|
+| 100 ⭐ | Parallel parking |
+| 250 ⭐ | Obey **every** traffic law for 10 straight minutes |
+| 500 ⭐ | Drive the full coastline without touching water |
+| 1,000 ⭐ | A 24-hour autonomous session, streamed |
+| 5,000 ⭐ | Pass the (self-imposed) Vice City driving test, examiner voice included |
+
+The counter is at the top of this page. You know what to do.
+
+## Most wanted
+
+```text
+        ╔══════════════════════════════════════════╗
+        ║                 WANTED                   ║
+        ║               ★ ★ ★ ★ ★                  ║
+        ║                                          ║
+        ║                "CLAUDE"                  ║
+        ║                                          ║
+        ║   Last seen : Ocean Drive, northbound    ║
+        ║   Vehicle   : whatever was unlocked      ║
+        ║   Charges   : driving at 2 tool calls    ║
+        ║               per second, impersonating  ║
+        ║               a licensed driver,         ║
+        ║               excessive politeness       ║
+        ║               at four-way stops          ║
+        ║                                          ║
+        ║   DO NOT APPROACH — IT WILL APOLOGIZE    ║
+        ╚══════════════════════════════════════════╝
+```
+
+## FAQ
+
+**Will it beat the game?**
+No.
+
+**Will it obey traffic laws?**
+Also no. But unlike other Vice City residents, it will feel bad about it.
+
+**Why is it driving so slowly?**
+Each decision is a screenshot → reasoning → controller input round-trip measured in seconds. It's not slow, it's *deliberate*.
+
+**Is this legal?**
+It's my PS5, my copy of the game, and an AI with too much free time. Remote Play is an official Sony feature; the automation on top is unofficial — see the disclaimer.
+
+**Can I run this?**
+Yes — [Quickstart](#quickstart). All you need is a PS5 and the conviction that this is a good use of it.
+
+**Is this whole repo just hype?**
+The hype is real. So are the [13 passing tests](tests/test_session.py).
+
+## 📰 Press
+
+Writing about AI playing GTA 6 on launch day? The one-paragraph version:
+
+> *On November 19, 2026, an open-source MCP server let Anthropic's Claude play Grand Theft Auto VI on an unmodified PlayStation 5 over Sony's official Remote Play protocol — screenshot in, controller input out, with a public log of every decision the AI made.*
+
+Clips, logs, and technical details: everything in this repo is quotable with a link back.
 
 ## Disclaimer
 
