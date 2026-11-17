@@ -241,6 +241,26 @@ class RemotePlaySession:
         device.controller.stick(side, point=(0.0, 0.0))
         self._record("stick", side=side, x=x, y=y, ms=ms)
 
+    def combo(self, buttons: list[str], interval_ms: int = 80) -> dict[str, Any]:
+        """Execute a button sequence at machine speed — the cheat-code primitive."""
+        device = self._require_connection()
+        if not buttons:
+            raise SessionError("Empty button sequence.")
+        sequence = [b.upper() for b in buttons]
+        unknown = [b for b in sequence if b not in device.controller.buttons()]
+        if unknown:
+            raise SessionError(
+                f"Unknown buttons {unknown}; valid: {device.controller.buttons()}"
+            )
+        interval = max(30, interval_ms) / 1000
+        for button in sequence:
+            device.controller.button(button, "press")
+            time.sleep(interval / 2)
+            device.controller.button(button, "release")
+            time.sleep(interval / 2)
+        self._record("combo", buttons=sequence, interval_ms=interval_ms)
+        return {"buttons": sequence, "count": len(sequence), "interval_ms": interval_ms}
+
     def drive(self, throttle: float, steer: float, seconds: float) -> dict[str, Any]:
         device = self._require_connection()
         throttle, steer = _clamp(throttle), _clamp(steer)

@@ -86,6 +86,7 @@ No hardware hacks. Sony ships the door: **PS5 Remote Play**, which Rockstar has 
 | `drive(throttle, steer, seconds)` | High-level driving macro |
 | `enter_vehicle()` | Find and enter the nearest car |
 | `open_phone()` | Open the in-game phone |
+| `cheat(sequence)` | Execute a cheat-code button sequence at machine speed |
 
 Every action Claude takes shows up as a **visible tool call in the log**, side by side with the gameplay. That log is the receipt: no scripted footage, no human on the sticks.
 
@@ -99,6 +100,12 @@ The perception-action loop takes seconds per cycle — Claude looks at a frame, 
 - ❌ Real-time combat, precision stunts, or "beating the game" — the latency makes twitch gameplay physically impossible, and we're not going to pretend otherwise
 
 An AI tourist in Vice City on day one is the whole point — and it's wild enough on its own.
+
+## 🎮 Cheat codes at machine speed
+
+GTA cheats have always been button sequences — `R1, R2, L1, R2, LEFT, DOWN, RIGHT, UP…` — and humans have always fumbled them. Claude doesn't. The `cheat()` tool fires any sequence with millisecond timing, zero mistakes, every press receipted in the action log.
+
+Nobody knows GTA 6's cheat codes yet. The moment the community finds the first one, it goes into **[docs/cheats.md](docs/cheats.md)** and Claude can execute it on stream — probably before most players have finished writing it down. Watch that file.
 
 ## Quickstart
 

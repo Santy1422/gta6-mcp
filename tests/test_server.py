@@ -38,6 +38,14 @@ class FakeSession:
             "pedal": "R2" if throttle >= 0 else "L2",
         }
 
+    def combo(self, buttons, interval_ms=80):
+        self.calls.append(("combo", tuple(buttons), interval_ms))
+        return {
+            "buttons": [b.upper() for b in buttons],
+            "count": len(buttons),
+            "interval_ms": interval_ms,
+        }
+
     def action_log(self, limit=20):
         self.calls.append(("action_log", limit))
         return [{"action": "press"}]
@@ -95,6 +103,12 @@ def test_drive_formats_result(fake_session):
     assert ("drive", -1.0, 0.5, 2.0) in fake_session.calls
 
 
+def test_cheat_parses_sequence(fake_session):
+    message = server.cheat("R1, R2 L1,CROSS")
+    assert "4-button sequence" in message
+    assert ("combo", ("R1", "R2", "L1", "CROSS"), 80) in fake_session.calls
+
+
 def test_macros(fake_session):
     server.enter_vehicle()
     server.open_phone()
@@ -126,6 +140,7 @@ def test_all_tools_registered():
         "press",
         "stick",
         "drive",
+        "cheat",
         "enter_vehicle",
         "open_phone",
         "action_log",

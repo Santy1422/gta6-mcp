@@ -29,6 +29,14 @@ class FakeController:
     def stick(self, side, axis=None, value=None, point=None):
         self.calls.append(("stick", side, point))
 
+    @staticmethod
+    def buttons():
+        return [
+            "UP", "DOWN", "LEFT", "RIGHT", "L1", "R1", "L2", "R2",
+            "CROSS", "CIRCLE", "SQUARE", "TRIANGLE", "OPTIONS", "SHARE",
+            "PS", "L3", "R3", "TOUCHPAD",
+        ]
+
 
 class FakeFrame:
     def to_image(self):
@@ -264,6 +272,24 @@ def test_drive_coasts_without_pedal(connected):
     assert buttons == []
 
 
+def test_combo_executes_sequence_in_order(connected):
+    result = connected.combo(["r1", "r2", "cross"], interval_ms=50)
+    assert result == {"buttons": ["R1", "R2", "CROSS"], "count": 3, "interval_ms": 50}
+    presses = [c[1] for c in connected._device.controller.calls if c[2] == "press"]
+    assert presses == ["R1", "R2", "CROSS"]
+    assert connected.action_log()[-1]["action"] == "combo"
+
+
+def test_combo_rejects_unknown_buttons(connected):
+    with pytest.raises(SessionError, match="Unknown buttons"):
+        connected.combo(["CROSS", "SELECT"])
+
+
+def test_combo_rejects_empty_sequence(connected):
+    with pytest.raises(SessionError, match="Empty"):
+        connected.combo([])
+
+
 def test_action_log_clamps_limit(connected):
     connected.tap("CROSS")
     assert len(connected.action_log(limit=0)) == 1
@@ -284,6 +310,7 @@ def test_server_registers_all_tools():
         "press",
         "stick",
         "drive",
+        "cheat",
         "enter_vehicle",
         "open_phone",
         "action_log",

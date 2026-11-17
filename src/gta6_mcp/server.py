@@ -7,6 +7,8 @@ single tool call covers seconds of gameplay despite model latency.
 
 from __future__ import annotations
 
+import re
+
 from mcp.server.mcpserver import Image, MCPServer
 
 from .session import RemotePlaySession
@@ -104,6 +106,19 @@ def drive(throttle: float = 1.0, steer: float = 0.0, seconds: float = 2.0) -> st
         f"Drove {result['seconds']:.1f}s (throttle={result['throttle']:+.2f} "
         f"via {result['pedal']}, steer={result['steer']:+.2f})."
     )
+
+
+@mcp.tool()
+def cheat(sequence: str, interval_ms: int = 80) -> str:
+    """Execute a button sequence at machine speed — cheat codes, GTA-style.
+
+    `sequence` is a comma- or space-separated button list, e.g.
+    "R1, R2, L1, R2, LEFT, DOWN, RIGHT, UP". Runs with precise timing and
+    no fumbled inputs; each press lands in the action log.
+    """
+    buttons = [b for b in re.split(r"[,\s]+", sequence.strip()) if b]
+    result = _session.combo(buttons, interval_ms)
+    return f"Executed {result['count']}-button sequence: {' '.join(result['buttons'])}."
 
 
 @mcp.tool()
