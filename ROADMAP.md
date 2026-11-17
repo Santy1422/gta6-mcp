@@ -19,9 +19,10 @@ The realistic plan. Dates are anchored to the GTA 6 launch on **Thursday, Novemb
 
 **Goal:** the smallest tool surface Claude needs, validated on a game we already own.
 
-- [x] MCP server exposing `screenshot()`, `press(button, ms)`, `stick(side, x, y, ms)` — plus `drive()`, `enter_vehicle()`, `open_phone()` macros
+- [x] MCP server exposing `screenshot()`, `press(button, ms)`, `stick(side, x, y, ms)` — plus `drive()`, `walk()`, `cheat()`, `enter_vehicle()`, `open_phone()` macros (14 tools, [v0.1.0](https://github.com/Santy1422/gta6-mcp/releases/tag/v0.1.0))
+- [x] Tool-call logging: `action_log()` timestamps every input sent to the console
 - [ ] Claude completes a trivial task in another PS5 game (navigate a menu, move a character)
-- [ ] Tool-call log capture working alongside screen recording
+- [ ] Screen recording running alongside the action log
 
 **Exit gate:** Claude performs a multi-step action on the PS5 unassisted, with the log to prove it.
 

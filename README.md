@@ -18,6 +18,7 @@
 [![Platform](https://img.shields.io/badge/Platform-PS5%20(stock)-003791)](https://www.playstation.com)
 [![Game](https://img.shields.io/badge/Game-GTA%206-ff2d78)](https://www.rockstargames.com/VI)
 [![Status](https://img.shields.io/badge/Status-T--minus%20launch%20day-orange)]()
+[![Release](https://img.shields.io/github/v/release/Santy1422/gta6-mcp?label=release&color=blue)](https://github.com/Santy1422/gta6-mcp/releases)
 [![Day One](https://img.shields.io/badge/Day%20One-Nov%2019%2C%202026-success)]()
 [![Stars](https://img.shields.io/github/stars/Santy1422/gta6-mcp?style=social)](https://github.com/Santy1422/gta6-mcp/stargazers)
 
@@ -142,7 +143,9 @@ pytest                         # 54 tests, 100% coverage enforced, no PS5 requir
 ```
 
 The codebase is two modules: `session.py` (Remote Play session on a background
-event loop, exposed as blocking calls) and `server.py` (the MCP tool surface).
+event loop, exposed as blocking calls) and `server.py` (the MCP tool surface — 14 tools).
+
+Want in before Thursday? See **[CONTRIBUTING.md](CONTRIBUTING.md)**. What shipped so far: **[CHANGELOG.md](CHANGELOG.md)** · **[v0.1.0 — "The server is ready. The game isn't."](https://github.com/Santy1422/gta6-mcp/releases/tag/v0.1.0)**
 
 ## Roadmap
 
