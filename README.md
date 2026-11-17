@@ -13,6 +13,7 @@
 </div>
 
 [![CI](https://github.com/Santy1422/gta6-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/Santy1422/gta6-mcp/actions/workflows/ci.yml)
+[![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen)](https://github.com/Santy1422/gta6-mcp/actions/workflows/ci.yml)
 [![MCP](https://img.shields.io/badge/Protocol-MCP-blueviolet)](https://modelcontextprotocol.io)
 [![Platform](https://img.shields.io/badge/Platform-PS5%20(stock)-003791)](https://www.playstation.com)
 [![Game](https://img.shields.io/badge/Game-GTA%206-ff2d78)](https://www.rockstargames.com/VI)
@@ -128,8 +129,8 @@ Every input the server sends to the console is recorded — ask Claude for `acti
 
 ```bash
 pip install -e ".[dev]"
-ruff check src tests   # lint
-pytest                 # 13 tests, no PS5 required (pyremoteplay is faked)
+ruff check src tests scripts   # lint
+pytest                         # 45 tests, 100% coverage enforced, no PS5 required
 ```
 
 The codebase is two modules: `session.py` (Remote Play session on a background
@@ -225,7 +226,7 @@ It's my PS5, my copy of the game, and an AI with too much free time. Remote Play
 Yes — [Quickstart](#quickstart). All you need is a PS5 and the conviction that this is a good use of it.
 
 **Is this whole repo just hype?**
-The hype is real. So are the [13 passing tests](tests/test_session.py).
+The hype is real. So are the [45 passing tests](tests/) — at 100% coverage, which is more than the hype can say.
 
 ## 📰 Press
 

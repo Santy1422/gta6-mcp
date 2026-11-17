@@ -16,7 +16,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest>=8.0", "ruff>=0.6"]
+dev = ["pytest>=8.0", "pytest-cov>=5.0", "ruff>=0.6"]
 
 [project.scripts]
 gta6-mcp = "gta6_mcp.server:main"
@@ -38,3 +38,13 @@ ignore = ["E402"]  # session.py filters warnings before importing pyremoteplay
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+addopts = "--cov --cov-report=term-missing --cov-fail-under=100"
+
+[tool.coverage.run]
+source = ["gta6_mcp", "countdown"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "if __name__ == .__main__.:",
+]

@@ -40,12 +40,19 @@ class FakeReceiver:
         self.video_frames = [FakeFrame()]
 
     def get_latest_video_frame(self):
-        return self.video_frames[-1]
+        return self.video_frames[-1] if self.video_frames else None
 
 
 class FakeDevice:
     registered_users = ["tester"]
     reachable = True
+    accepts_connection = True
+    disconnect_raises = False
+    wake_calls = []
+
+    host_name = "FAKE-PS5"
+    host_type = "PS5"
+    status_name = "Ok"
 
     def __init__(self, host):
         self.host = host
@@ -53,20 +60,29 @@ class FakeDevice:
         self.connected = False
         self.session_kwargs = None
 
+    @staticmethod
+    def search():
+        return [FakeDevice("10.0.0.9")]
+
     def get_status(self):
         return {"host-name": "FAKE-PS5"} if self.reachable else None
 
     def get_users(self):
         return list(self.registered_users)
 
+    def wakeup(self, user=""):
+        FakeDevice.wake_calls.append((self.host, user))
+
     def create_session(self, user, **kwargs):
         self.session_kwargs = {"user": user, **kwargs}
 
     async def connect(self):
-        self.connected = True
-        return True
+        self.connected = self.accepts_connection
+        return self.accepts_connection
 
     def disconnect(self):
+        if self.disconnect_raises:
+            raise OSError("socket already closed")
         self.connected = False
 
 
@@ -74,6 +90,9 @@ class FakeDevice:
 def fake_env(monkeypatch):
     FakeDevice.registered_users = ["tester"]
     FakeDevice.reachable = True
+    FakeDevice.accepts_connection = True
+    FakeDevice.disconnect_raises = False
+    FakeDevice.wake_calls = []
     monkeypatch.setattr(session_module, "RPDevice", FakeDevice)
     monkeypatch.setattr(session_module, "QueueReceiver", FakeReceiver)
     monkeypatch.setattr(session_module, "FRAME_TIMEOUT", 1.0)
@@ -169,6 +188,86 @@ def test_disconnect_resets_state(connected):
     assert not connected.connected
     with pytest.raises(SessionError):
         connected.screenshot()
+
+
+def test_search_lists_consoles(fake_env):
+    results = RemotePlaySession.search()
+    assert results == [
+        {"host": "10.0.0.9", "name": "FAKE-PS5", "type": "PS5", "status": "Ok"}
+    ]
+
+
+def test_status_returns_dict(fake_env):
+    assert RemotePlaySession.status("10.0.0.5") == {"host-name": "FAKE-PS5"}
+
+
+def test_status_unreachable(fake_env):
+    FakeDevice.reachable = False
+    with pytest.raises(SessionError, match="No response"):
+        RemotePlaySession.status("10.0.0.5")
+
+
+def test_wake_sends_signal(fake_env):
+    message = RemotePlaySession.wake("10.0.0.5")
+    assert "Wake signal" in message
+    assert FakeDevice.wake_calls == [("10.0.0.5", "tester")]
+
+
+def test_wake_requires_registration(fake_env):
+    FakeDevice.registered_users = []
+    with pytest.raises(SessionError, match="--register"):
+        RemotePlaySession.wake("10.0.0.5")
+
+
+def test_connect_twice_is_an_error(connected):
+    with pytest.raises(SessionError, match="Already connected"):
+        connected.connect("10.0.0.5")
+
+
+def test_connect_unreachable_host(fake_env):
+    FakeDevice.reachable = False
+    with pytest.raises(SessionError, match="No response"):
+        RemotePlaySession().connect("10.0.0.5")
+
+
+def test_connect_refused_tears_down(fake_env):
+    FakeDevice.accepts_connection = False
+    s = RemotePlaySession()
+    with pytest.raises(SessionError, match="refused"):
+        s.connect("10.0.0.5")
+    assert not s.connected
+
+
+def test_connect_times_out_without_video(fake_env, monkeypatch):
+    monkeypatch.setattr(session_module, "FRAME_TIMEOUT", 0.05)
+    monkeypatch.setattr(FakeReceiver, "__init__", lambda self: setattr(self, "video_frames", []))
+    with pytest.raises(SessionError, match="no video frame"):
+        RemotePlaySession().connect("10.0.0.5")
+
+
+def test_screenshot_without_frame(connected):
+    connected._receiver.video_frames.clear()
+    with pytest.raises(SessionError, match="No video frame"):
+        connected.screenshot()
+
+
+def test_disconnect_survives_device_error(connected):
+    FakeDevice.disconnect_raises = True
+    connected.disconnect()
+    assert not connected.connected
+
+
+def test_drive_coasts_without_pedal(connected):
+    result = connected.drive(throttle=0.0, steer=1.0, seconds=1.0)
+    assert result["throttle"] == 0.0
+    buttons = [c for c in connected._device.controller.calls if c[0] == "button"]
+    assert buttons == []
+
+
+def test_action_log_clamps_limit(connected):
+    connected.tap("CROSS")
+    assert len(connected.action_log(limit=0)) == 1
+    assert len(connected.action_log(limit=-5)) == 1
 
 
 def test_server_registers_all_tools():
