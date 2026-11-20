@@ -4,7 +4,7 @@
 
 <div align="center">
 
-### 🔴 IT'S HAPPENING
+### 🏁 IT HAPPENED — scroll down for the clips
 
 **GTA 6 drops Thursday, Nov 19, 2026. The first AI gameplay clip lands in this repo the same day.**
 
